@@ -1,11 +1,14 @@
 <template>
   <div id="app">
+    <CalculatorView />
   </div>
 </template>
 
 <script>
-export default {
+import CalculatorView from './views/Calculator.vue';
 
+export default {
+    components: { CalculatorView }
 }
 </script>
 
@@ -16,6 +19,12 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-wrap: nowrap;
+    align-items: center;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Roboto+Condensed:wght@700&family=Roboto:wght@400;500;700;900&display=swap');
