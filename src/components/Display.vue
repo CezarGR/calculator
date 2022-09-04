@@ -1,12 +1,14 @@
 <template>
     <div class="display">
-        0
+        {{ value }}
     </div>
 </template>
 
 <script>
 export default {
-
+    props: [
+        'value'
+    ]
 }
 </script>
 
@@ -17,13 +19,15 @@ export default {
 }
 
 .display {
+    padding: 20px;
     border: 1px solid white;
     border-radius: 4px;
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
     grid-column: span 4;
+    overflow: hidden;
 }
 </style>

@@ -1,25 +1,25 @@
 <template>
     <div class="calculator">
-        <DisplayVue />
-        <ButtonVue label="C" :operationGrey="true"/>
-        <ButtonVue label="+/-" :operationGrey="true"/>
-        <ButtonVue label="%" :operationGrey="true"/>
-        <ButtonVue label="C" :operation="true"/>
-        <ButtonVue label="7" />
-        <ButtonVue label="8" />
-        <ButtonVue label="9" />
-        <ButtonVue label="X" :operation="true"/>
-        <ButtonVue label="4" />
-        <ButtonVue label="5" />
-        <ButtonVue label="6" />
-        <ButtonVue label="-" :operation="true"/>
-        <ButtonVue label="1" />
-        <ButtonVue label="2" />
-        <ButtonVue label="3" />
-        <ButtonVue label="+" :operation="true"/>
-        <ButtonVue label="0" :double="true"/>
-        <ButtonVue label="," :operation="true"/>
-        <ButtonVue label="=" :operation="true"/>
+        <DisplayVue v-model="displayValue" />
+        <ButtonVue label="AC" :operationGrey=true @onClick="clearMemory"/>
+        <ButtonVue label="+/-" :operationGrey="true" @onClick="setOperation"/>
+        <ButtonVue label="%" :operationGrey="true" @onClick="setOperation"/>
+        <ButtonVue label="/" :operation="true" @onClick="setOperation"/>
+        <ButtonVue label="7"  @onClick="addDigt"/>
+        <ButtonVue label="8"  @onClick="addDigt"/>
+        <ButtonVue label="9"  @onClick="addDigt"/>
+        <ButtonVue label="*" :operation="true" @onClick="setOperation"/>
+        <ButtonVue label="4"  @onClick="addDigt"/>
+        <ButtonVue label="5"  @onClick="addDigt"/>
+        <ButtonVue label="6"  @onClick="addDigt"/>
+        <ButtonVue label="-" :operation="true" @onClick="setOperation"/>
+        <ButtonVue label="1"  @onClick="addDigt"/>
+        <ButtonVue label="2"  @onClick="addDigt"/>
+        <ButtonVue label="3"  @onClick="addDigt"/>
+        <ButtonVue label="+" :operation="true" @onClick="setOperation"/>
+        <ButtonVue label="0" :double="true" @onClick="addDigt"/>
+        <ButtonVue label="." :operation="true" @onClick="addDigt"/>
+        <ButtonVue label="=" :operation="true" @onClick="setOperation"/>
     </div>
 </template>
 
@@ -28,7 +28,75 @@ import ButtonVue from '@/components/Button.vue';
 import DisplayVue from '@/components/Display.vue';
 
 export default {
-    components: { ButtonVue, DisplayVue }
+    data: function() {
+        return {
+            displayValue: "0",
+            clearDisplay: false,
+            operation: null,
+            values: [0, 0],
+            current: 0
+        }
+    },
+    components: { ButtonVue, DisplayVue },
+    methods: {
+        clearMemory() {
+            Object.assign(this.$data, this.$options.data())
+        },
+        setOperation(operation) {
+            console.log('o');
+
+            if (this.current === 0) {
+                this.operation = operation
+                this.current = 1
+                this.clearDisplay = true
+            }
+            else {
+                const equals = operation === "="
+                const currentOperation = this.operation
+
+                try {
+                    console.log( `${this.values[0]} ${currentOperation} ${this.values[1]}`)
+                    const result = eval(
+                        `${this.values[0]} ${currentOperation} ${this.values[1]}`
+                    )
+
+                    if (isNaN(result) || !isFinite(result)) {
+                        this.clearMemory()
+                        return
+                    }
+
+                    this.values[0] = result
+                } catch (e) {
+                    console.log(e);
+                    this.$emit('onError', e);
+                }
+
+                this.values[1] = 0
+                this.displayValue = this.values[0]
+                this.operation = equals ? null : operation
+                this.current = equals ? 0 : 1
+                this.clearDisplay = !equals
+            }
+        },
+        addDigt(n) {
+            if (n === "." && this.displayValue.includes(".")) {
+                return
+            }
+
+            const clearDisplay = this.displayValue === "0" || this.clearDisplay
+            const currentValue = clearDisplay ? "" : this.displayValue
+            const displayValue = currentValue + n
+
+            this.displayValue = displayValue
+            this.clearDisplay =  false
+
+            if (n != ".") {
+                const i = this.current
+                const newValue = parseFloat(displayValue)
+                this.values[i] = newValue
+            }
+        }
+    }
 }
 </script>
 
